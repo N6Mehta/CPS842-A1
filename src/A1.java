@@ -1,5 +1,7 @@
-/**
- * Created by Ni2 on 9/21/2016.
+/*
+  Created by Nitish on 9/21/2016.
+  NITISH PRO-TIP: USE HASH-MAPS. WHAT YOU HAVE IS WRONG.
+  Hash-map <word, object> where Object is all things related to that word (i.e. Frequency, Document where it is found)
  */
 import java.io.*;
 import java.util.*;
