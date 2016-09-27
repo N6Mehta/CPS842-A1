@@ -9,72 +9,45 @@ import java.util.*;
 public class A1 {
     public static void main(String args[]) throws IOException{
        Map map1 = new HashMap();
-        Scanner scan = null;
+       Scanner scan = null;
         try {
-            scan = new Scanner(new BufferedReader(new FileReader("C:\\Users\\Ni2\\IdeaProjects\\CPS842 A1\\cacm\\cacm.all"))) ;
+            scan = new Scanner(new BufferedReader(new FileReader("C:\\Users\\NituPC\\IdeaProjects\\CPS842-A1\\cacm\\cacm.all"))) ;
             String st;
             st = scan.next();
             String next;
 
             do{
                 next = scan.next();
-                if (next.equals(".W")) {
-                    st = scan.next();
-                    //String word = st;
-                    if(map1.get(st) == null) map1.put(st, 1);
-                    else {
-                        int newWord = Integer.valueOf(String.valueOf(map1.get(st)));
-                        newWord ++ ;
-                        map1.put(st, newWord);
-                    }
-                   /** String[] words = st.split(" ");
-                    for (int i = 0; i < words.length; i++) {
-                        if (map1.get(words[i]) == null) {
-                            map1.put(words[i], 1);
-                        } else {
-                            int newWord = Integer.valueOf(String.valueOf(map1.get(words[i])));
+
+                if (next.equals(".W"))
+                {
+                    next = scan.next();
+                    String n = next.replaceAll("[^a-zA-Z\\s]", "").toLowerCase();
+                    //System.out.println(n);
+                    while(!(next.equals(".B"))) {
+                        if (map1.get(n) == null) map1.put(n, 1);
+                        else {
+                            int newWord = Integer.valueOf(String.valueOf(map1.get(n)));
                             newWord++;
-                            map1.put(words[i], newWord);
+                            map1.put(n, newWord);
                         }
-                    }
-                    builder.append(System.lineSeparator());**/
+                        next = scan.next();
+                    }  //st = next;
                 }
-                st = next;
             }while(scan.hasNext());
         }finally {
             if (scan != null) {
                 scan.close();
             }
         }
-        Map<String, String> fin = new TreeMap<String, String>(map1);
-        for(Object key : fin.keySet()) {
-            System.out.println("word: " + key + "\tCounts: " + map1.get(key));
-        }
 
+        PrintStream print = new PrintStream(new FileOutputStream("Document.txt", true), true);
 
-/**
-        Scanner scan = null;
-        HashMap<String, Integer> map = new HashMap<String,Integer>();
-        try {
-            scan = new Scanner(new BufferedReader(new FileReader("C:\\Users\\Ni2\\IdeaProjects\\CPS842 A1\\cacm\\cacm.all")));
-            String st;
-            st = scan.next();
-            String next;
-            do {
-                next = scan.next();
-                if((next.equals(".I"))) {
-                   // System.out.println(st);
-                    map.put(st,)
-                    text(st,"Dictionary.txt");
-                }
-                st= next;
-            }while(scan.hasNext());
+        List<String> listVal = new ArrayList<String>(map1.keySet());
+        Collections.sort(listVal);
+        for (int i = 0; i < listVal.size(); i++) {
+            print.println(listVal.get(i) + " " + map1.get(listVal.get(i)));
         }
-        finally{
-            if(scan != null){
-                scan.close();
-            }
-        }**/
 
     }
 
