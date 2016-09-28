@@ -31,7 +31,7 @@ public class A1 {
                     //while next value is not .B
                     while (!(next.equals(".B"))) {
                         n = next.replaceAll("[^a-zA-z]", "").toLowerCase();
-                        /**-->Call Stemmer here<--*/
+                        /**-->Call Stemmer here<---*/
                         if (map1.get(n) == null) map1.put(n, 1);
                         else {
                             int newWord = Integer.valueOf(String.valueOf(map1.get(n)));
