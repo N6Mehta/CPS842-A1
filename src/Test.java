@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class Test
 {
     /**START*/
+    //random change
     public static void main(String args[])
     {
         Test T = new Test();
