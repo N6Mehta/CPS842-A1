@@ -57,7 +57,7 @@ public class A1 {
                         else {
                             postList temp = new postList();
                             temp.DocumentsOccured = list.get(n).DocumentsOccured;
-                            temp.termFreq = list.get(n).termFreq;
+                            temp.termFreq = list.get(n).termFreq ;
                             temp.pos = list.get(n).pos;
                             temp.DocumentsOccured.add(ID);
                             temp.termFreq.add(count);
