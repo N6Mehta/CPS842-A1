@@ -18,7 +18,6 @@ public class A1 {
         Scanner scan2 = null;
 
         int ID= 0;
-        int count = 0;
         int pos = 0;
         String between = "";
         String poster = "";
@@ -91,15 +90,6 @@ public class A1 {
                                         list.get(nexterm).termFreq.add(temp);
                                         list.get(nexterm).pos.add(pos);
                                     }
-                                    /**
-                                    postList temp = new postList();
-                                    temp.DocumentsOccured = list.get(nexterm).DocumentsOccured;
-                                    temp.termFreq = list.get(nexterm).termFreq;
-                                    temp.pos = list.get(nexterm).pos;
-                                    temp.DocumentsOccured.add(ID);
-                                    temp.termFreq.add(counter++);
-                                    temp.pos.add(pos);
-                                    list.put(nexterm, temp);**/
                                 }
                             }
                         }
@@ -173,5 +163,8 @@ public class A1 {
             }
 
     }
+
+
+
 
 }
