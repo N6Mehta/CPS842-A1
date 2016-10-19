@@ -15,11 +15,6 @@ public class A1 {
         Scanner scan = null;
         Scanner scan2 = null;
 
-        String temper = "abandon";
-        temper = strem(temper);
-        System.out.println(temper);
-
-
         int ID= 0;
         int pos = 0;
         String between = "";
@@ -39,13 +34,14 @@ public class A1 {
                 //if next value is .W or .T take the values after it
                 else if (next.equals(".W") || (next.equals(".T"))) {
                     next = scan.next();
+
                     //while next value is not .B
                     while (!(next.equals(".B")))  {
-                        between = next + scan.nextLine(); // THIS NEEDS TO BE FIXED NITISH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        between = next + scan.nextLine();
                         //if word does not exist in dictionary hashmap
-                        n = next.replaceAll("[!&-+.'^:,/()$<>;\\[\\]%*\"]", "").toLowerCase();
+                        n = next.replaceAll("[!&--+.'^:,/()$<>;\\[\\]%*\"]", "").toLowerCase(); //[!&--+.'^:,/()$<>;\[\]%*"]
                         n = strem(n);
-                        if(n.length() > 1 && !n.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
+                        if(n.length() >= 1 && !n.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) { //^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$
                             if (mapp.get(n) == null) {
                                 mapp.put(n, 1);
                             }
@@ -56,31 +52,32 @@ public class A1 {
                                 mapp.put(n, newWord);
                             }
                         }
-                        poster = between.replaceAll("[!&-+.'^:,/()$<>;\\[\\]%*\"]", "").toLowerCase();
+                        poster = between.replaceAll("[!&--+.'^:,/()$<>;\\[\\]%*\"]", " ").toLowerCase();
                         StringTokenizer st = new StringTokenizer(poster);
-                            //if word does not exist in postings list tree map
-                        while(st.hasMoreElements()) {
+                            //if word doesnot exist in postings list tree map
+                        while((!(st.equals(".B"))) && st.hasMoreElements()) {
                             String nexterm = st.nextElement().toString();
+                            int position = 0;
+                            position ++;
                             int counter = 1 ;
                             nexterm = strem(nexterm);
-                            if (nexterm.length() > 1 && !nexterm.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
+                            if (nexterm.length() >= 1 && !nexterm.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
                                 if (list.get(nexterm) == null) {
                                     postList temp = new postList();
                                     temp.DocumentsOccured.add(ID);
                                     temp.termFreq.add(counter);
-                                    temp.pos.add(pos);
+                                    temp.pos.add(position);
                                     list.put(nexterm, temp);
                                 }
                                 //else if word does exist in postings list tree map
                                 else if (list.containsKey(nexterm)) {
-
                                     if(list.get(nexterm).DocumentsOccured.contains(ID) == true) {
                                         for(int i = 0; i < list.get(nexterm).DocumentsOccured.size(); i++){
                                                 if(list.get(nexterm).DocumentsOccured.get(i) == ID)
                                                {
                                                    int temp = list.get(nexterm).termFreq.get(i) + 1;
                                                     list.get(nexterm).termFreq.set(i, temp);
-                                                    list.get(nexterm).pos.add(pos);
+                                                    list.get(nexterm).pos.add(position);
                                                 }
                                             }
                                     }
@@ -89,7 +86,7 @@ public class A1 {
                                         int temp = 1;
                                         list.get(nexterm).DocumentsOccured.add(ID);
                                         list.get(nexterm).termFreq.add(temp);
-                                        list.get(nexterm).pos.add(pos);
+                                        list.get(nexterm).pos.add(position);
                                     }
                                 }
                             }
@@ -99,37 +96,36 @@ public class A1 {
                     }
 
                 }
-
-
             } while (scan.hasNext());
         } finally {
             if (scan != null) {
                 scan.close();
             }
         }
+           stopWords(scan2,current + "\\src\\common_words", mapp);
+           stopWords(scan2,current + "\\src\\common_words", list);
 
-        //Scan through common_words file to remove common words
-        try {
-            scan2 = new Scanner(new BufferedReader(new FileReader(current + "\\src\\common_words")));
-            String st;
-
-            do {
-                st = scan2.next();
-                if (mapp.get(st) != null)
-                {
-                    mapp.remove(st);
-                }
-
-            } while (scan2.hasNext());
-        } finally {
-            if (scan2 != null)
-            {
-                scan2.close();
+            //Write hashmap to Dictionary.txt file
+            PrintWriter print = new PrintWriter(new FileOutputStream("Dictionary.txt", true), true);
+            List<String> listVal = new ArrayList<String>(mapp.keySet());
+            Collections.sort(listVal);
+            for (int i = 0; i < listVal.size(); i++) {
+                print.println(listVal.get(i) + " " + mapp.get(listVal.get(i)));
             }
-        }
 
+            //Write hashmap to postlist.txt file
+           PrintWriter print2 = new PrintWriter(new FileOutputStream("PostList.txt", true), true);
+            for(Map.Entry<String,postList> entry : list.entrySet()){
+                print2.write(entry.getKey() + " " + entry.getValue().toString());
+                print2.write("\n");
+
+            }
+    }
+
+    public static void stopWords(Scanner scan2, String file, Map list) throws IOException, IndexOutOfBoundsException
+    {
         try {
-            scan2 = new Scanner(new BufferedReader(new FileReader(current + "\\src\\common_words")));
+            scan2 = new Scanner(new BufferedReader(new FileReader(file)));
             String st;
 
             do {
@@ -147,21 +143,6 @@ public class A1 {
             }
         }
 
-            //Write hashmap to Dictionary.txt file
-            PrintWriter print = new PrintWriter(new FileOutputStream("Dictionary.txt", true), true);
-            List<String> listVal = new ArrayList<String>(mapp.keySet());
-            Collections.sort(listVal);
-            for (int i = 0; i < listVal.size(); i++) {
-                print.println(listVal.get(i) + " " + mapp.get(listVal.get(i)));
-            }
-
-            //Write hashmap to postlist.txt file
-           PrintWriter print2 = new PrintWriter(new FileOutputStream("PostList.txt", true), true);
-            for(Map.Entry<String,postList> entry : list.entrySet()){
-                print2.write(entry.getKey() + " " + entry.getValue().toString());
-                print2.write("\n");
-
-            }
     }
 
     public static String StepOne(String word)
