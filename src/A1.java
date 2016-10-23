@@ -153,7 +153,7 @@ public class A1 {
         List<Integer> listVale = new ArrayList<Integer>(authorList.keySet());
         Collections.sort(listVale);
         for (int i = 0; i < listVale.size(); i++) {
-            printer.println(listVale.get(i) + " " + authorList.get(listVale.get(i)));
+            printer.println(listVale.get(i) + "\n" + authorList.get(listVale.get(i)));
         }
 
         //Write hashmap to title.txt file
@@ -161,7 +161,7 @@ public class A1 {
         List<Integer> listValue = new ArrayList<Integer>(titleList.keySet());
         Collections.sort(listValue);
         for (int i = 0; i < listValue.size(); i++) {
-        printer2.println(listValue.get(i) + " " + titleList.get(listValue.get(i)));
+        printer2.println(listValue.get(i) + "\n" + titleList.get(listValue.get(i)));
         }
 
             //Write hashmap to postlist.txt file
