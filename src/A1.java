@@ -8,36 +8,57 @@ public class A1 {
 
     //public  String cacm = current + "\\cacm.all";
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException  {
         String current = System.getProperty("user.dir");
         Map<String, postList> list = new TreeMap<String, postList>();
         Map<String, Integer> mapp = new HashMap();
+        Map<Integer,String> authorList = new HashMap();
+        Map<Integer, String> titleList = new HashMap();
         Scanner scan = null;
         Scanner scan2 = null;
-
         int ID= 0;
         int pos = 0;
-        String between = "";
+        String authorLines = "";
+        String titleLines = "";
+        String betweenLines = "";
         String poster = "";
         try {
             scan = new Scanner(new BufferedReader(new FileReader(current + "\\src\\cacm.all")));
             String next = "";
             String n;
             do {
+                pos = 0;
                 next = scan.next();
                 if(next.equals(".I")){
                     next = scan.next();
-
+                    pos++;
                     ID = Integer.parseInt(next);
 
                 }
-                //if next value is .W or .T take the values after it
-                else if (next.equals(".W") || (next.equals(".T"))) {
+                else if (next.equals(".T")) {
                     next = scan.next();
+                    while(!(next.equals(".W")) && (!(next.equals(".B"))) && (!(next.equals(".A"))))
+                    {
+                        titleLines = next ;
+                        if(titleList.get(ID) == null) {
+                            titleList.put(ID, titleLines);
+                        }
+                        else {
+                           titleLines =  titleList.get(ID)  + " " + next;
+                            titleList.put(ID, titleLines);
+                        }
+                        next = scan.next();
+                    }
 
+                }
+               // next = scan.next();
+                //if next value is .W take the values after it
+                if (next.equals(".W")) {// || (next.equals(".T"))) {
+                    next = scan.next();
+                    pos++;
                     //while next value is not .B
                     while (!(next.equals(".B")))  {
-                        between = next + scan.nextLine();
+                        betweenLines = next + scan.nextLine();
                         //if word does not exist in dictionary hashmap
                         n = next.replaceAll("[!&--+.'^:,/()$<>;\\[\\]%*\"]", "").toLowerCase(); //[!&--+.'^:,/()$<>;\[\]%*"]
                         n = strem(n);
@@ -52,13 +73,12 @@ public class A1 {
                                 mapp.put(n, newWord);
                             }
                         }
-                        poster = between.replaceAll("[!&--+.'^:,/()$<>;\\[\\]%*\"]", " ").toLowerCase();
+                        poster = betweenLines.replaceAll("[!&--+.'^:,/()$<>;\\[\\]%*\"]", " ").toLowerCase();
                         StringTokenizer st = new StringTokenizer(poster);
                             //if word doesnot exist in postings list tree map
                         while((!(st.equals(".B"))) && st.hasMoreElements()) {
                             String nexterm = st.nextElement().toString();
-                            int position = 0;
-                            position ++;
+                            pos++;
                             int counter = 1 ;
                             nexterm = strem(nexterm);
                             if (nexterm.length() >= 1 && !nexterm.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
@@ -66,7 +86,7 @@ public class A1 {
                                     postList temp = new postList();
                                     temp.DocumentsOccured.add(ID);
                                     temp.termFreq.add(counter);
-                                    temp.pos.add(position);
+                                    temp.pos.add(pos);
                                     list.put(nexterm, temp);
                                 }
                                 //else if word does exist in postings list tree map
@@ -77,7 +97,7 @@ public class A1 {
                                                {
                                                    int temp = list.get(nexterm).termFreq.get(i) + 1;
                                                     list.get(nexterm).termFreq.set(i, temp);
-                                                    list.get(nexterm).pos.add(position);
+                                                    list.get(nexterm).pos.add(pos);
                                                 }
                                             }
                                     }
@@ -86,7 +106,7 @@ public class A1 {
                                         int temp = 1;
                                         list.get(nexterm).DocumentsOccured.add(ID);
                                         list.get(nexterm).termFreq.add(temp);
-                                        list.get(nexterm).pos.add(position);
+                                        list.get(nexterm).pos.add(pos);
                                     }
                                 }
                             }
@@ -94,7 +114,20 @@ public class A1 {
 
                         next = scan.next();
                     }
-
+                }
+                else if(next.equals(".A")) {
+                    next = scan.next();
+                    while ((!(next.equals(".N"))) && (!(next.equals(".K")))){
+                        authorLines = next ;
+                        if(authorList.get(ID) == null) {
+                            authorList.put(ID, authorLines);
+                        }
+                        else {
+                            authorLines =  authorList.get(ID)  + " " + next;
+                            authorList.put(ID, authorLines);
+                        }
+                        next = scan.next();
+                    }
                 }
             } while (scan.hasNext());
         } finally {
@@ -112,6 +145,24 @@ public class A1 {
             for (int i = 0; i < listVal.size(); i++) {
                 print.println(listVal.get(i) + " " + mapp.get(listVal.get(i)));
             }
+
+
+        //Write hashmap to Author.txt file
+
+        PrintWriter printer = new PrintWriter(new FileOutputStream("Author.txt", true), true);
+        List<Integer> listVale = new ArrayList<Integer>(authorList.keySet());
+        Collections.sort(listVale);
+        for (int i = 0; i < listVale.size(); i++) {
+            printer.println(listVale.get(i) + " " + authorList.get(listVale.get(i)));
+        }
+
+        //Write hashmap to title.txt file
+        PrintWriter printer2 = new PrintWriter(new FileOutputStream("Title.txt", true), true);
+        List<Integer> listValue = new ArrayList<Integer>(titleList.keySet());
+        Collections.sort(listValue);
+        for (int i = 0; i < listValue.size(); i++) {
+        printer2.println(listValue.get(i) + " " + titleList.get(listValue.get(i)));
+        }
 
             //Write hashmap to postlist.txt file
            PrintWriter print2 = new PrintWriter(new FileOutputStream("PostList.txt", true), true);
