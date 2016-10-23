@@ -12,7 +12,7 @@ public class postList {
     //String word;
 
     public String toString(){
-        return "\nDocument ID " + printID() + "\n" + "TermFreq" + printFrequencies() + "\n" + "position" + printPositions();
+        return "\nDocumentID " + printID() + "\n" + "TermFreq" + printFrequencies() + "\n" + "position" + printPositions();
     }
 
     public String printID()

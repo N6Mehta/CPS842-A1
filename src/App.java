@@ -341,6 +341,7 @@ public class App {
     public static void DictionaryHashMap(String query) throws FileNotFoundException
     {
         Scanner Sc;
+        String line = "";
         String current = System.getProperty("user.dir");
         Sc = new Scanner(new BufferedReader(new FileReader(current + "\\Dictionary.txt")));
         while(Sc.hasNext())
@@ -359,28 +360,28 @@ public class App {
       //  System.out.println("hello");
         postList post = new postList();
         Scanner sc;
+        String docLine = "";
         String current = System.getProperty("user.dir");
         sc = new Scanner(new BufferedReader(new FileReader(current + "\\PostList.txt")));
-        System.out.println("hello");
         while(sc.hasNext())
             {
                 String word = sc.next();
                 if(word.equalsIgnoreCase(query)){
-                        String docLine = sc.nextLine();
-                        String IDs = docLine.replace("Document ID", "");
-                        List<String> arrayList = new ArrayList<String>    (Arrays.asList(IDs.split(" ")));
-                        System.out.println(arrayList);
-                        for(String fav:arrayList){
+                    String temp = sc.nextLine();
+                    docLine = sc.nextLine();
+                    String IDs = docLine.replaceAll("DocumentID  ", "");
+                    List<String> arrayList = new ArrayList<String>    (Arrays.asList(IDs.split(" ")));
+                    for(String fav:arrayList){
                             post.DocumentsOccured.add(Integer.parseInt(fav));
                         }
 
                         String termLine = sc.nextLine();
-                        String freq = termLine.replace("TermFreq", "");
+                        String freq = termLine.replaceAll("TermFreq ", "");
                         List<String> arrayList2 = new ArrayList<String>    (Arrays.asList(freq.split(" ")));
                         for(String fav:arrayList2) {
                             post.termFreq.add(Integer.parseInt(fav.trim()));
-                            System.out.println(fav);
                         }
+
                     postings.put(word, post);
 
                 }
