@@ -85,10 +85,16 @@ public class App {
                             fin += s + " ";
                         }
                         getTitles();
-                        DictionaryHashMap(split);
+                        for(String temp: split){
+                            DictionaryHashMap(temp);
+                        }
                         System.out.println(dictionary);
+
+                        for(String temp: split){
+                            PostingHashMap(temp);
+                        }
                         //PostingHashMap(split);
-                        //System.out.println(postings.toString());
+                        System.out.println(postings.toString());
 
                     }
                    catch (IOException ioe)  {
@@ -332,26 +338,23 @@ public class App {
         }
     }
 
-    public static void DictionaryHashMap(ArrayList<String> query) throws FileNotFoundException
+    public static void DictionaryHashMap(String query) throws FileNotFoundException
     {
         Scanner Sc;
         String current = System.getProperty("user.dir");
         Sc = new Scanner(new BufferedReader(new FileReader(current + "\\Dictionary.txt")));
-        for(String r : query)
-        {
-            while(Sc.hasNext())
+        while(Sc.hasNext())
             {
                 String word = Sc.next();
-                if(word.equalsIgnoreCase(r)){
-                   int freq = Integer.parseInt(Sc.next());
-                   dictionary.put(word, freq);
+                if(word.equalsIgnoreCase(query)){
+                    int freq = Integer.parseInt(Sc.next());
+                    dictionary.put(word, freq);
                     break;
                 }
             }
-        }
     }
 
-    public static void PostingHashMap(ArrayList<String> query) throws FileNotFoundException
+    public static void PostingHashMap(String query) throws FileNotFoundException
     {
       //  System.out.println("hello");
         postList post = new postList();
@@ -359,12 +362,10 @@ public class App {
         String current = System.getProperty("user.dir");
         sc = new Scanner(new BufferedReader(new FileReader(current + "\\PostList.txt")));
         System.out.println("hello");
-        for(String r : query)
-        {
-            while(sc.hasNext())
+        while(sc.hasNext())
             {
                 String word = sc.next();
-                if(word.equalsIgnoreCase(r)){
+                if(word.equalsIgnoreCase(query)){
                         String docLine = sc.nextLine();
                         String IDs = docLine.replace("Document ID", "");
                         List<String> arrayList = new ArrayList<String>    (Arrays.asList(IDs.split(" ")));
@@ -386,11 +387,5 @@ public class App {
 
             }
         }
-
-
-    }
-
-
-
 
 }
