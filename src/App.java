@@ -76,7 +76,9 @@ public class App {
                             System.out.println(fina);
                         }
                     }
-                    catch(IOException ioe) {}
+                    catch(IOException ioe) {
+                        System.out.println(ioe);
+                    }
 
                     /*Re run compilation but include stop words HERE*/
                     JOptionPane.showMessageDialog(null,"Document lists have been changed to contain stop words");
