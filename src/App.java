@@ -197,7 +197,52 @@ public class App {
             }
         });
     }
+///////////
+    public App(String evalQuery)
+    {
+        ArrayList<String> split = new ArrayList<String>();
+        StringTokenizer input = new StringTokenizer(evalQuery);
+        String fina = " ";
+        while(input.hasMoreElements())
+        {
+            split.add(input.nextElement().toString());
+        }
 
+        String fin = "";
+
+        try{
+            in = split;
+            for(String s : split) {
+                fin += s + " ";
+            }
+            getTitles();
+            getAuthors();
+            for(String temp: split){
+                DictionaryHashMap(temp);
+            }
+
+            for(String temp: split){
+                PostingHashMap(temp);
+            }
+
+            termFreq(dictionary, postList);
+            WeightCalc(dictionary, postList);
+            cosSim(postList,split,in);
+            sortSim(postList);
+
+            fina = outPut(order, authorList, titleList);
+
+            System.out.println(fina);
+
+        }
+        catch (IOException ioe)  {
+            System.out.println(ioe);
+        }
+
+        query = searchfield.getText();
+        JOptionPane.showMessageDialog(null,"This is the result of your search: '"+fin.trim()+" = " + fina);
+    }
+    //////////
     public String stopWords(String list) throws IOException, IndexOutOfBoundsException
     {
         Scanner scan2 = null;
