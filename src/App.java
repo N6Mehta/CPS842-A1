@@ -105,9 +105,9 @@ public class App {
                         sortSim(postList);
 
 
-                        fina = outPut(order, authorList, titleList);
+                        fina = outPut(order);
 
-                        System.out.println(fina);
+                        System.out.println(fina );
 
 
                     }
@@ -116,7 +116,7 @@ public class App {
                    }
                 }
                 query = searchfield.getText();
-                JOptionPane.showMessageDialog(null,"This is the result of your search: '"+fin.trim()+" = " + fina);
+                JOptionPane.showMessageDialog(null,"This is the result of your search: "+ "\n" + fin.trim() + " = " + fina + "\n");
             }
         });
     }
@@ -530,22 +530,50 @@ public class App {
 
         }
 
-        public static String outPut(Map<String,Double> cos, Map<Integer, String> author, Map<Integer, String> title) {
+        public static String outPut(Map<String,Double> cos) {
             String fin = "";
-            String fina = "";
+            String d= "";
+            String a= "";
+            String tl= "";
+            double dv = 0.0;
             int i = 0;
+            //int d = 0;
             for (Map.Entry<String, Double> temp : cos.entrySet())
             {
-                    if(author.containsKey(temp.getKey()) && title.containsKey(temp.getKey()))
+                if(i == 10)
+                {
+                    break;
+                }
+                d = temp.getKey();
+               // System.out.println(d);
+
+                dv = temp.getValue();
+               // System.out.println(dv);
+
+                fin += "\n" + d + "\n" + dv + "\n";
+
+                    if(authorList.containsKey(d)) //|| titleList.containsKey(temp.getKey()))
                     {
+                        System.out.println("hello");
+                        d = temp.getKey();
+                        System.out.println(d);
+
+                        a = authorList.get(temp.getKey());
+                        System.out.println(a);
+
+                        tl = titleList.get(temp.getKey());
+                        System.out.println(tl);
+
+                        dv = temp.getValue();
+                        System.out.println(dv);
+
                         System.out.println("he2l2lo");
-                        fina = i + " " +  temp.getKey()+ " " + author.get(temp.getKey()) + " " + title.get(temp.getKey()) + " " + temp.getValue();
-                        System.out.println(fina);
+                        fin = i + " " +  d + " " + a  + " " + tl + " " + dv;
+                        System.out.println(fin);
 
                     }
                 i++;
             }
-            fin = fina;
             return fin;
         }
 
