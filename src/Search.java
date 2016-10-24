@@ -16,33 +16,48 @@ import java.util.*;
 
 public class Search {
 
-    public ArrayList<String> userInput = new ArrayList<String>();
+    public ArrayList<Double> w = new ArrayList();
+    public ArrayList<Double> termfs = new ArrayList<>();
+    public ArrayList<Double> cos = new ArrayList<>();
 
-    public static void main(String args[]) throws IOException {
-        String query1 = null;
-        App gui = new App();
-        JFrame frame = new JFrame("App");
-        frame.setContentPane(gui.panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+    public String word = "";
+    public String docTermFreq = "";
+    public String documentsOccured = "";
 
-        run(gui);
+
+    public String cos()
+    {
+        String list = "";
+        for (double temp: cos)
+        {
+            list = list + " " + temp;
+        }
+        return "" + list + "";
+    }
+    public String term()
+    {
+        String list = "";
+        for (double temp: termfs)
+        {
+            list = list + " " + temp;
+        }
+        return "" + list + "";
+    }
+    public String weightPrint()
+    {
+        String list = "";
+        for (double temp: w)
+        {
+            list = list + " " + temp;
+        }
+        return "" + list + "";
+    }
+    public String toString()
+    {
+        return /**documentsOccured + "\n" + docTermFreq+ "\n" + term()  +   "\n" +   weightPrint()  + **/ "\n" +cos() ;
     }
 
-    public static void run(App gui) {
-        ArrayList<String> userInput = new ArrayList<String>();
-        gui.searchButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            String list = gui.query;
-                System.out.println(list);
-                StringTokenizer input = new StringTokenizer(list);
-                while(input.hasMoreElements())
-                {
-                    userInput.add(input.nextElement().toString());
-                }
-                System.out.println(userInput);
-            }
-        });
-    }
+
+
+
 }

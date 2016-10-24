@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -19,11 +20,13 @@ public class App {
     public JRadioButton stemming;
     public JTextField searchfield;
     public String query = "";
-    public ArrayList<String> input = new ArrayList<String>();
+    public ArrayList<String> in = new ArrayList<String>();
     public static Map<Integer, String> titleList = new HashMap();
     public static Map<Integer, String> authorList = new HashMap();
     public static Map<String, Integer> dictionary = new HashMap();
-    public static Map<String, postList>  postings = new HashMap();
+    public static Map<String, Search>  postList = new HashMap();
+    public static Map<String, Double> order = new HashMap();
+    public static ArrayList<Double> termFreq = new ArrayList<Double>();
 
     public App() {
         searchButton.addActionListener(new ActionListener() {
@@ -31,10 +34,12 @@ public class App {
                 String value = searchfield.getText();
                ArrayList<String> split = new ArrayList<String>();
                 StringTokenizer input = new StringTokenizer(value);
+                String fina = " ";
                 while(input.hasMoreElements())
                 {
                     split.add(input.nextElement().toString());
                 }
+
                 String fin = "";
                 if(stopWordRemoval.isSelected() && stemming.isSelected())
                 {
@@ -79,33 +84,39 @@ public class App {
                     JOptionPane.showMessageDialog(null,"Document lists have had their words stemmed");
                 }
                 if(!stemming.isSelected() && !stopWordRemoval.isSelected()) {
-
                     try{
+                        in = split;
                         for(String s : split) {
                             fin += s + " ";
                         }
                         getTitles();
+                        getAuthors();
                         for(String temp: split){
                             DictionaryHashMap(temp);
                         }
-                        System.out.println(dictionary);
 
                         for(String temp: split){
                             PostingHashMap(temp);
                         }
-                        //PostingHashMap(split);
-                        System.out.println(postings.toString());
+
+                        termFreq(dictionary, postList);
+                        WeightCalc(dictionary, postList);
+                        cosSim(postList,split,in);
+                        sortSim(postList);
+
+
+                        fina = outPut(order, authorList, titleList);
+
+                        System.out.println(fina);
+
 
                     }
                    catch (IOException ioe)  {
                        System.out.println(ioe);
                    }
-
-
                 }
-
                 query = searchfield.getText();
-                JOptionPane.showMessageDialog(null,"This is the result of your search: '"+fin.trim()+"'");
+                JOptionPane.showMessageDialog(null,"This is the result of your search: '"+fin.trim()+" = " + fina);
             }
         });
     }
@@ -358,10 +369,10 @@ public class App {
     public static void PostingHashMap(String query) throws FileNotFoundException
     {
       //  System.out.println("hello");
-        postList post = new postList();
         Scanner sc;
         String docLine = "";
         String current = System.getProperty("user.dir");
+        Search val = new Search();
         sc = new Scanner(new BufferedReader(new FileReader(current + "\\PostList.txt")));
         while(sc.hasNext())
             {
@@ -370,23 +381,177 @@ public class App {
                     String temp = sc.nextLine();
                     docLine = sc.nextLine();
                     String IDs = docLine.replaceAll("DocumentID  ", "");
-                    List<String> arrayList = new ArrayList<String>    (Arrays.asList(IDs.split(" ")));
-                    for(String fav:arrayList){
-                            post.DocumentsOccured.add(Integer.parseInt(fav));
-                        }
+                    val.documentsOccured = IDs;
 
-                        String termLine = sc.nextLine();
-                        String freq = termLine.replaceAll("TermFreq ", "");
-                        List<String> arrayList2 = new ArrayList<String>    (Arrays.asList(freq.split(" ")));
-                        for(String fav:arrayList2) {
-                            post.termFreq.add(Integer.parseInt(fav.trim()));
-                        }
 
-                    postings.put(word, post);
+                    String termLine = sc.nextLine();
+                    String freq = termLine.replaceAll("TermFreq ", "");
+                    val.docTermFreq = freq;
+                    postList.put(query, val);
 
                 }
 
             }
         }
+
+        public static void termFreq(Map<String, Integer> doc, Map<String, Search> pos)
+        {
+           StringTokenizer d;
+            StringTokenizer f;
+
+            for(Map.Entry<String,Search> temp : pos.entrySet())
+            {
+                d = new StringTokenizer(temp.getValue().documentsOccured);
+                f = new StringTokenizer(temp.getValue().docTermFreq);
+                Search n = new Search();
+                String freq = "";
+                while(d.hasMoreElements() && f.hasMoreElements()){
+                    double tem = Double.parseDouble(f.nextElement().toString());
+                    double termFreq = 1 + Math.log10(tem);
+                    n.termfs.add(termFreq);
+                }
+                n.documentsOccured = temp.getValue().documentsOccured;
+                n.docTermFreq = temp.getValue().docTermFreq;
+
+                postList.put(temp.getKey(),n);
+            }
+        }
+
+        public static void WeightCalc(Map<String, Integer> doc, Map<String, Search> pos)
+        {
+            for(Map.Entry<String, Integer> temp : doc.entrySet())
+            {
+
+                double totalDocs = (double) 3204;
+                double docFreq = (double) temp.getValue();
+                double idf = Math.log10(totalDocs/docFreq);
+                Search t = new Search();
+                t = postList.get(temp.getKey());
+                for(double tf : t.termfs)
+                {
+                    t.w.add(tf*idf);
+                }
+                postList.put(temp.getKey(), t);
+
+            }
+        }
+
+        public void cosSim(Map<String, Search> pos, ArrayList<String> query, ArrayList<String> input)
+        {
+            ArrayList<Double> docPowerTwo = new ArrayList<Double>();
+            ArrayList<Double> queryPowerTwo = new ArrayList<Double>();
+            double doc = 0.0;
+            double que = 0.0;
+
+            ArrayList<Double> vector = new ArrayList<Double>();
+            for(String word: query)
+            {
+                int num = Collections.frequency(input,word);
+                double weight = 1 + Math.log10((double)num);
+                vector.add(weight);
+
+                int i = 0;
+                for(Map.Entry<String, Search> temp : pos.entrySet()) {
+                    Search n = temp.getValue();
+                    int j = 0;
+                    StringTokenizer line = new StringTokenizer(n.documentsOccured);
+
+                    while (line.hasMoreElements()) {
+                        if (j == n.w.size()) {
+                            break;
+                        }
+                        String l = line.nextElement().toString();
+                        double multiply = n.w.get(j) * vector.get(i);
+                        for (Double tem : n.w) {
+                            docPowerTwo.add(tem * tem);
+                        }
+                        for (Double tem : docPowerTwo) {
+                            doc += tem;
+                        }
+
+                        for (Double tem : vector) {
+                            queryPowerTwo.add(tem * tem);
+                        }
+                        for (Double tem : queryPowerTwo) {
+                            que += tem;
+                        }
+                        double square = doc * que;
+                        n.cos.add(multiply / square);
+                        j++;
+                    }
+                    postList.put(temp.getKey(), n) ;
+                    i++;
+                }
+
+            }
+        }
+
+        public static Map<String, Double> arrangedList(Search n){
+            Map<String, Double> tem = new TreeMap<String, Double>();
+            Search p = n;
+            int i = 0;
+            StringTokenizer d = new StringTokenizer(p.documentsOccured);
+
+            while(d.hasMoreElements())
+            {
+                String line = d.nextElement().toString();
+                tem.put(line, p.cos.get(i));
+                i++;
+            }
+            return tem;
+        }
+
+
+
+        public static void sortSim(Map<String, Search> sim)
+        {
+            Map<String, Double> tem = new TreeMap<String, Double>();
+            for(Map.Entry<String, Search> temp : sim.entrySet())
+            {
+                Search n = temp.getValue();
+                if(tem.isEmpty()){
+                    tem = arrangedList(n);
+                    order = tem;
+                }
+                else
+                {
+                    Map<String, Double> next = new TreeMap();
+                    next = arrangedList(n);
+                    Set<String> st = tem.keySet();
+                    Set<String> st2 = next.keySet();
+                    st.retainAll(st2);
+                    for(String i : st)
+                    {
+                        tem.put(i, tem.get(i));
+                    }
+
+                }
+            }
+
+        }
+
+        public static String outPut(Map<String,Double> cos, Map<Integer, String> author, Map<Integer, String> title) {
+            String fin = "";
+            String fina = "";
+            int i = 0;
+            for (Map.Entry<String, Double> temp : cos.entrySet())
+            {
+                    if(author.containsKey(temp.getKey()) && title.containsKey(temp.getKey()))
+                    {
+                        System.out.println("he2l2lo");
+                        fina = i + " " +  temp.getKey()+ " " + author.get(temp.getKey()) + " " + title.get(temp.getKey()) + " " + temp.getValue();
+                        System.out.println(fina);
+
+                    }
+                i++;
+            }
+            fin = fina;
+            return fin;
+        }
+
+
+
+
+
 
 }

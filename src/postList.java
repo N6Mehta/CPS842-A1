@@ -9,6 +9,7 @@ public class postList {
     List<Integer> termFreq = new ArrayList<>();
     List<Integer> pos = new ArrayList<>();
 
+
     //String word;
 
     public String toString(){
