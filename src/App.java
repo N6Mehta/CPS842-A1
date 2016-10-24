@@ -50,6 +50,30 @@ public class App {
                             String stremmed = strem(que);
                             fin += stremmed + " ";
                             query += fin.trim();
+
+                            in = split;
+                            for (String t : split) {
+                                fin += t + " ";
+                            }
+                            getTitles();
+                            getAuthors();
+                            for (String temp : split) {
+                                DictionaryHashMap(temp);
+                            }
+
+                            for (String temp : split) {
+                                PostingHashMap(temp);
+                            }
+
+                            termFreq(dictionary, postList);
+                            WeightCalc(dictionary, postList);
+                            cosSim(postList, split, in);
+                            sortSim(postList);
+
+
+                            fina = outPut(order);
+
+                            System.out.println(fina);
                         }
                     }
                     catch(IOException ioe) {}
@@ -64,6 +88,30 @@ public class App {
                             String que = stopWords(test);
                             fin += que + " ";
                             query += fin.trim();
+
+                            in = split;
+                            for (String t : split) {
+                                fin += t + " ";
+                            }
+                            getTitles();
+                            getAuthors();
+                            for (String temp : split) {
+                                DictionaryHashMap(temp);
+                            }
+
+                            for (String temp : split) {
+                                PostingHashMap(temp);
+                            }
+
+                            termFreq(dictionary, postList);
+                            WeightCalc(dictionary, postList);
+                            cosSim(postList, split, in);
+                            sortSim(postList);
+
+
+                            fina = outPut(order);
+
+                            System.out.println(fina);
                         }
                     }
                     catch(IOException ioe) {}
@@ -74,12 +122,39 @@ public class App {
 
                 if(stemming.isSelected() && !stopWordRemoval.isSelected())
                 {
-                    for(String s : split) {
-                        String test = strem(s);
-                        fin += test + " ";
-                        query += fin.trim();
-                    }
+                    try {
+                        for (String s : split) {
+                            String test = strem(s);
+                            fin += test + " ";
+                            query += fin.trim();
+                        }
+                        in = split;
+                        for (String s : split) {
+                            fin += s + " ";
+                        }
+                        getTitles();
+                        getAuthors();
+                        for (String temp : split) {
+                            DictionaryHashMap(temp);
+                        }
 
+                        for (String temp : split) {
+                            PostingHashMap(temp);
+                        }
+
+                        termFreq(dictionary, postList);
+                        WeightCalc(dictionary, postList);
+                        cosSim(postList, split, in);
+                        sortSim(postList);
+
+
+                        fina = outPut(order);
+
+                        System.out.println(fina);
+                    }
+                    catch (IOException ioe){
+                        System.out.println();
+                    }
                     /*Re run compilation but stem the words HERE*/
                     JOptionPane.showMessageDialog(null,"Document lists have had their words stemmed");
                 }
@@ -545,30 +620,28 @@ public class App {
                     break;
                 }
                 d = temp.getKey();
-               // System.out.println(d);
 
+                int key = Integer.parseInt(temp.getKey());
                 dv = temp.getValue();
-               // System.out.println(dv);
 
-                fin += "\n" + d + "\n" + dv + "\n";
+                //fin += "\n" + d + "\n" + dv + "\n";
 
-                    if(authorList.containsKey(d)) //|| titleList.containsKey(temp.getKey()))
+                    if(authorList.containsKey(key) && titleList.containsKey(key))
                     {
                         System.out.println("hello");
                         d = temp.getKey();
                         System.out.println(d);
 
-                        a = authorList.get(temp.getKey());
+                        a = authorList.get(key);
                         System.out.println(a);
 
-                        tl = titleList.get(temp.getKey());
+                        tl = titleList.get(key);
                         System.out.println(tl);
 
                         dv = temp.getValue();
                         System.out.println(dv);
 
-                        System.out.println("he2l2lo");
-                        fin = i + " " +  d + " " + a  + " " + tl + " " + dv;
+                        fin +=  "\nDocument ID: " +  d + "\n" + " Author: " + a  + "\n" + "Title: " + tl + "\n" +  "CosineSim: " +  dv;
                         System.out.println(fin);
 
                     }
